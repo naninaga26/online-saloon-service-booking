@@ -29,9 +29,13 @@ Each project has comprehensive documentation that Claude follows:
 
 ```
 Backend-Service/docs/
-├── ARCHITECTURE.md       # System design, patterns, API structure
-├── DEVELOPER_GUIDE.md    # Development workflow, coding standards
-└── QUALITY_STRATEGY.md   # Testing strategy, coverage goals
+├── ARCHITECTURE.md         # System design, patterns, API structure
+├── DEVELOPER_GUIDE.md      # Development workflow, coding standards
+├── QUALITY_STRATEGY.md     # Testing strategy, coverage goals
+├── TYPE_STRUCTURE.md       # TypeScript type organization (Approach 2)
+├── TYPE_ORGANIZATION_GUIDE.md  # Interface vs Type, naming conventions
+├── ZOD_VALIDATION_GUIDE.md     # Zod schema patterns and usage
+└── USER_MODEL_GUIDE.md     # User model documentation
 
 Web-React/docs/
 ├── ARCHITECTURE.md       # Component architecture, state management
@@ -286,11 +290,20 @@ If Claude's context is full:
 
 ## 🔗 Quick Links
 
-- [Claude Code Guidelines - Backend](Backend-Service/docs/ARCHITECTURE.md#-claude-code-guidelines)
-- [Claude Code Guidelines - React](Web-React/docs/ARCHITECTURE.md#-claude-code-guidelines)
-- [Claude Code Guidelines - Vue](Web-Vue/docs/ARCHITECTURE.md#-claude-code-guidelines)
+### Project Configuration
 - [Project Instructions](.claude/instructions.md)
 - [Claude Ignore Rules](.claudeignore)
+
+### Claude Code Guidelines
+- [Backend Guidelines](Backend-Service/docs/ARCHITECTURE.md#-claude-code-guidelines)
+- [React Guidelines](Web-React/docs/ARCHITECTURE.md#-claude-code-guidelines)
+- [Vue Guidelines](Web-Vue/docs/ARCHITECTURE.md#-claude-code-guidelines)
+
+### Backend Documentation
+- [Type Structure Guide](Backend-Service/docs/TYPE_STRUCTURE.md)
+- [Type Organization Guide](Backend-Service/docs/TYPE_ORGANIZATION_GUIDE.md)
+- [Zod Validation Guide](Backend-Service/docs/ZOD_VALIDATION_GUIDE.md)
+- [User Model Guide](Backend-Service/docs/USER_MODEL_GUIDE.md)
 
 ## 📚 Additional Resources
 
