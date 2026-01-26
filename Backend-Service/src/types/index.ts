@@ -1,46 +1,16 @@
-// Common types and interfaces used throughout the application
+/**
+ * Central export point for all types and interfaces
+ * Import from here to maintain consistency: import { User, ApiResponse } from '../types';
+ */
 
-export interface ApiResponse<T = any> {
-  success: boolean;
-  message: string;
-  data?: T;
-  errors?: string[];
-}
+// Common types - shared across domains
+export * from './common.types';
 
-export interface PaginationParams {
-  page: number;
-  limit: number;
-  sortBy?: string;
-  sortOrder?: 'ASC' | 'DESC';
-}
+// Domain-specific types
+export * from './user.types';
 
-export interface PaginatedResponse<T> {
-  success: boolean;
-  message: string;
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    totalPages: number;
-    totalItems: number;
-  };
-}
-
-export type UserRole = 'customer' | 'admin';
-
-export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
-
-export type PaymentStatus = 'pending' | 'completed' | 'failed';
-
-export interface JwtPayload {
-  userId: number;
-  email: string;
-  role: UserRole;
-  iat?: number;
-  exp?: number;
-}
-
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
+// Add more domain exports as you create them:
+// export * from './booking.types';
+// export * from './service.types';
+// export * from './slot.types';
+// export * from './payment.types';
