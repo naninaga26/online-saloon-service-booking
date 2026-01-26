@@ -1,0 +1,79 @@
+# Claude Code Ignore File
+# Similar to .gitignore, this tells Claude Code which files to exclude from context
+
+# Dependencies
+**/node_modules/
+**/package-lock.json
+**/yarn.lock
+**/pnpm-lock.yaml
+
+# Build outputs
+**/dist/
+**/build/
+**/.next/
+**/.nuxt/
+**/out/
+
+# Cache directories
+**/.cache/
+**/.vite/
+**/.turbo/
+
+# Coverage reports
+**/coverage/
+**/.nyc_output/
+
+# Logs
+**/logs/
+**/*.log
+**/npm-debug.log*
+
+# Environment files (may contain secrets)
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Database files
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+
+# IDE files
+**/.vscode/
+**/.idea/
+**/*.swp
+**/*.swo
+**/*~
+
+# OS files
+**/.DS_Store
+**/Thumbs.db
+
+# Large asset files
+**/*.mp4
+**/*.avi
+**/*.mov
+**/*.zip
+**/*.tar.gz
+
+# Generated files
+**/generated/
+**/*.generated.ts
+**/*.generated.js
+
+# Temporary files
+**/tmp/
+**/temp/
+**/*.tmp
+
+# Test snapshots (can be large)
+**/__snapshots__/
+
+# Documentation that shouldn't be in context
+# (Uncomment if you have large docs you don't want loaded)
+# **/CHANGELOG.md
+# **/LICENSE
+
+# Vendor/third-party code
+**/vendor/
+**/third-party/
