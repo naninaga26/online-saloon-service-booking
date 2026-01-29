@@ -45,7 +45,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
    * Get user data without sensitive information
    */
   toSafeObject(): Omit<UserAttributes, 'password'> {
-    const { password, ...safeUser } = this.toJSON();
+    const { password: _password, ...safeUser } = this.toJSON();
     return safeUser;
   }
 }

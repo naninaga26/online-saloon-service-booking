@@ -23,7 +23,18 @@ This is a full-stack online salon service booking application with:
    - Service/Controller patterns
    - Adding new features workflow
 
-3. **[Backend-Service/docs/QUALITY_STRATEGY.md](../Backend-Service/docs/QUALITY_STRATEGY.md)**
+3. **[Backend-Service/docs/AUTH_IMPLEMENTATION.md](../Backend-Service/docs/AUTH_IMPLEMENTATION.md)**
+   - JWT authentication implementation
+   - User service and controller
+   - Dependency injection patterns
+   - API endpoints and usage examples
+
+4. **[Backend-Service/docs/GIT_HOOKS_GUIDE.md](../Backend-Service/docs/GIT_HOOKS_GUIDE.md)**
+   - Pre-commit and pre-push hooks
+   - Linting and formatting automation
+   - Code quality validation
+
+5. **[Backend-Service/docs/QUALITY_STRATEGY.md](../Backend-Service/docs/QUALITY_STRATEGY.md)**
    - Jest unit/integration testing
    - Test patterns and utilities
 

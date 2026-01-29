@@ -1,3 +1,16 @@
+/**
+ * Sequelize CLI Configuration
+ *
+ * This file is specifically for Sequelize CLI commands:
+ * - npm run migrate (sequelize-cli db:migrate)
+ * - npm run migrate:undo (sequelize-cli db:migrate:undo)
+ * - npm run seed (sequelize-cli db:seed:all)
+ *
+ * For application runtime database connection, see: src/config/database.ts
+ *
+ * Referenced by: .sequelizerc
+ */
+
 require('dotenv').config();
 
 module.exports = {

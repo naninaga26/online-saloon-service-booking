@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run full validation for Backend-Service before push
+echo "Running pre-push validation..."
+cd Backend-Service && npm run validate

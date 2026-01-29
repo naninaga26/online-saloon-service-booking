@@ -8,15 +8,22 @@ const PORT = config.port;
 // Initialize server
 const startServer = async () => {
   try {
-    // Test database connection
-    await testConnection();
-    logger.info('Database connection established');
+    // Test database connection (non-blocking)
+    try {
+      await testConnection();
+      logger.info('✅ Database connection established');
+    } catch (dbError) {
+      logger.warn('⚠️  Database connection failed - server will start without DB');
+      logger.warn('Database error:', dbError);
+      logger.warn('Some features may not work without database connection');
+    }
 
     // Start Express server
     app.listen(PORT, () => {
       logger.info(`🚀 Server running in ${config.nodeEnv} mode`);
       logger.info(`🌐 Server listening on port ${PORT}`);
       logger.info(`📍 API Base URL: http://localhost:${PORT}/api/${config.apiVersion}`);
+      logger.info(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
       logger.info(`💊 Health Check: http://localhost:${PORT}/health`);
     });
   } catch (error) {

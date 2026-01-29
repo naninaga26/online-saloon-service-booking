@@ -1,4 +1,4 @@
-import express, { Application, Request, Response, NextFunction } from 'express';
+import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -59,35 +59,27 @@ app.get(`/api/${config.apiVersion}`, (_req: Request, res: Response) => {
   });
 });
 
-// Routes will be added here
-// app.use(`/api/${config.apiVersion}/auth`, authRoutes);
+// Import routes
+import authRoutes from './routes/auth.routes';
+import userRoutes from './routes/user.routes';
+
+// Import error handlers
+import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
+
+// Register routes
+app.use(`/api/${config.apiVersion}/auth`, authRoutes);
+app.use(`/api/${config.apiVersion}/users`, userRoutes);
+
+// Additional routes will be added here
 // app.use(`/api/${config.apiVersion}/services`, serviceRoutes);
 // app.use(`/api/${config.apiVersion}/slots`, slotRoutes);
 // app.use(`/api/${config.apiVersion}/bookings`, bookingRoutes);
 // app.use(`/api/${config.apiVersion}/payments`, paymentRoutes);
 
 // 404 handler
-app.use((req: Request, res: Response) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route not found',
-    path: req.originalUrl,
-  });
-});
+app.use(notFoundHandler);
 
 // Global error handler
-// Note: All 4 parameters are required for Express to recognize this as an error handler
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  logger.error(`Error: ${err.message}`, { stack: err.stack });
-
-  const statusCode = (err as any).statusCode || 500;
-  const message = err.message || 'Internal Server Error';
-
-  res.status(statusCode).json({
-    success: false,
-    message,
-    ...(config.nodeEnv === 'development' && { stack: err.stack }),
-  });
-});
+app.use(errorHandler);
 
 export default app;
