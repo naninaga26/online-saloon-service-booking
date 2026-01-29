@@ -1,12 +1,26 @@
+// External dependencies
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import 'express-async-errors';
+
+// Configuration
 import config from './config/environment';
+
+// Utils
 import logger from './utils/logger';
+
+// Swagger
 import { swaggerSpec } from './swagger/swagger.config';
+
+// Routes
+import authRoutes from './routes/auth.routes';
+import userRoutes from './routes/user.routes';
+
+// Middlewares
+import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
 
 // Create Express application
 const app: Application = express();
@@ -67,13 +81,6 @@ app.get(`/api/${config.apiVersion}`, (_req: Request, res: Response) => {
     timestamp: new Date().toISOString(),
   });
 });
-
-// Import routes
-import authRoutes from './routes/auth.routes';
-import userRoutes from './routes/user.routes';
-
-// Import error handlers
-import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
 
 // Register routes
 app.use(`/api/${config.apiVersion}/auth`, authRoutes);
