@@ -2,9 +2,11 @@ import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
 import 'express-async-errors';
 import config from './config/environment';
 import logger from './utils/logger';
+import { swaggerSpec } from './swagger/swagger.config';
 
 // Create Express application
 const app: Application = express();
@@ -47,6 +49,13 @@ app.get('/health', (_req: Request, res: Response) => {
     timestamp: new Date().toISOString(),
     environment: config.nodeEnv,
   });
+});
+
+// Swagger documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api-docs.json', (_req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
 });
 
 // API version endpoint
