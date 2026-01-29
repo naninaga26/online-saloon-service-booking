@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import { storage } from '@/utils/storage';
 import { API_BASE_URL, API_TIMEOUT } from '@/utils/constants';
 import { toast } from 'react-toastify';

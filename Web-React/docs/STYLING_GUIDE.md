@@ -8,6 +8,7 @@ A comprehensive guide for styling the React salon booking application using Tail
 - [⚙️ Tailwind CSS Configuration](#️-tailwind-css-configuration)
 - [🎨 Utility-First Approach](#-utility-first-approach)
 - [🧩 Component Styling Patterns](#-component-styling-patterns)
+- [🔷 Radix UI Component Pattern](#-radix-ui-component-pattern)
 - [📱 Responsive Design](#-responsive-design)
 - [🎭 Custom Colors & Themes](#-custom-colors--themes)
 - [🌙 Dark Mode Support](#-dark-mode-support)
@@ -36,298 +37,115 @@ Our styling approach follows these principles:
 
 ### Installation
 
+This project uses **Tailwind CSS v4** with the new `@tailwindcss/postcss` plugin.
+
 ```bash
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
+npm install -D tailwindcss@next @tailwindcss/postcss@next
 ```
 
-### Tailwind Configuration
+### Tailwind v4 Configuration
 
-**tailwind.config.js:**
-
-```javascript
-/** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
-  darkMode: 'class', // Enable dark mode with class strategy
-  theme: {
-    extend: {
-      colors: {
-        // Primary brand colors
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-          950: '#082f49',
-        },
-        // Secondary colors
-        secondary: {
-          50: '#faf5ff',
-          100: '#f3e8ff',
-          200: '#e9d5ff',
-          300: '#d8b4fe',
-          400: '#c084fc',
-          500: '#a855f7',
-          600: '#9333ea',
-          700: '#7e22ce',
-          800: '#6b21a8',
-          900: '#581c87',
-          950: '#3b0764',
-        },
-        // Status colors
-        success: {
-          50: '#f0fdf4',
-          500: '#22c55e',
-          700: '#15803d',
-        },
-        warning: {
-          50: '#fffbeb',
-          500: '#f59e0b',
-          700: '#b45309',
-        },
-        error: {
-          50: '#fef2f2',
-          500: '#ef4444',
-          700: '#b91c1c',
-        },
-        info: {
-          50: '#eff6ff',
-          500: '#3b82f6',
-          700: '#1d4ed8',
-        },
-      },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        heading: ['Poppins', 'system-ui', 'sans-serif'],
-      },
-      spacing: {
-        '128': '32rem',
-        '144': '36rem',
-      },
-      borderRadius: {
-        '4xl': '2rem',
-      },
-      boxShadow: {
-        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        'card-hover': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-      },
-      animation: {
-        'fade-in': 'fadeIn 0.3s ease-in-out',
-        'fade-out': 'fadeOut 0.3s ease-in-out',
-        'slide-up': 'slideUp 0.3s ease-out',
-        'slide-down': 'slideDown 0.3s ease-out',
-        'scale-in': 'scaleIn 0.2s ease-out',
-        'spin-slow': 'spin 3s linear infinite',
-        'bounce-slow': 'bounce 2s infinite',
-      },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        fadeOut: {
-          '0%': { opacity: '1' },
-          '100%': { opacity: '0' },
-        },
-        slideUp: {
-          '0%': { transform: 'translateY(10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        slideDown: {
-          '0%': { transform: 'translateY(-10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        scaleIn: {
-          '0%': { transform: 'scale(0.95)', opacity: '0' },
-          '100%': { transform: 'scale(1)', opacity: '1' },
-        },
-      },
-      transitionDuration: {
-        '400': '400ms',
-      },
-    },
-  },
-  plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'),
-    require('@tailwindcss/aspect-ratio'),
-  ],
-}
-```
+**Important**: Tailwind v4 uses PostCSS-only configuration. No `tailwind.config.js` file is needed.
 
 ### PostCSS Configuration
 
-**postcss.config.js:**
+**postcss.config.mjs:**
 
 ```javascript
 export default {
   plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
+    '@tailwindcss/postcss': {},
   },
 }
 ```
 
-### CSS Entry Point
+### CSS Entry Point with Tailwind v4 @theme
 
 **src/index.css:**
 
+Tailwind v4 uses the new `@theme` directive to define custom design tokens as CSS custom properties.
+
 ```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* Custom base styles */
-@layer base {
-  html {
-    @apply scroll-smooth;
-  }
+/* Theme Configuration - Tailwind v4 @theme directive */
+@theme {
+  /* Primary Colors (Blue) - Inspired by Luzo */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
 
-  body {
-    @apply bg-gray-50 text-gray-900 antialiased;
-  }
+  /* Secondary Colors (Purple/Violet) */
+  --color-secondary-50: #faf5ff;
+  --color-secondary-100: #f3e8ff;
+  --color-secondary-200: #e9d5ff;
+  --color-secondary-300: #d8b4fe;
+  --color-secondary-400: #c084fc;
+  --color-secondary-500: #a855f7;
+  --color-secondary-600: #9333ea;
+  --color-secondary-700: #7e22ce;
+  --color-secondary-800: #6b21a8;
+  --color-secondary-900: #581c87;
+  --color-secondary-950: #3b0764;
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-semibold;
-  }
+  /* Success Colors */
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-500: #22c55e;
+  --color-success-700: #15803d;
 
-  h1 {
-    @apply text-4xl md:text-5xl;
-  }
+  /* Warning Colors */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-500: #f59e0b;
+  --color-warning-700: #b45309;
 
-  h2 {
-    @apply text-3xl md:text-4xl;
-  }
+  /* Error Colors */
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-500: #ef4444;
+  --color-error-700: #b91c1c;
 
-  h3 {
-    @apply text-2xl md:text-3xl;
-  }
-
-  /* Focus styles for accessibility */
-  *:focus-visible {
-    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
-  }
-
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    @apply w-2;
-  }
-
-  ::-webkit-scrollbar-track {
-    @apply bg-gray-100;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full hover:bg-gray-400;
-  }
+  /* Info Colors */
+  --color-info-50: #eff6ff;
+  --color-info-100: #dbeafe;
+  --color-info-200: #bfdbfe;
+  --color-info-500: #3b82f6;
+  --color-info-700: #1d4ed8;
 }
 
-/* Custom component styles */
-@layer components {
-  /* Button variants */
-  .btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200
-           focus:outline-none focus:ring-2 focus:ring-offset-2
-           disabled:opacity-50 disabled:cursor-not-allowed;
-  }
+/* Custom global styles */
+```
 
-  .btn-primary {
-    @apply btn bg-primary-600 text-white hover:bg-primary-700
-           focus:ring-primary-500 active:bg-primary-800;
-  }
+**Key Differences from Tailwind v3:**
 
-  .btn-secondary {
-    @apply btn bg-secondary-600 text-white hover:bg-secondary-700
-           focus:ring-secondary-500;
-  }
+1. **No `@tailwind` directives** - Use `@import "tailwindcss"` instead
+2. **No `@layer` directive** - Tailwind v4 handles layers automatically
+3. **Use `@theme` for custom design tokens** - Replaces the `theme.extend` in config file
+4. **CSS custom properties** - All theme values are defined as `--color-*`, `--spacing-*`, etc.
 
-  .btn-outline {
-    @apply btn border-2 border-primary-600 text-primary-600
-           hover:bg-primary-50 focus:ring-primary-500;
-  }
+**Usage in Components:**
 
-  .btn-ghost {
-    @apply btn text-gray-700 hover:bg-gray-100 focus:ring-gray-500;
-  }
+```typescript
+// Theme colors are automatically available
+<div className="bg-primary-600 text-white">
+  Primary background
+</div>
 
-  /* Input styles */
-  .input {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg
-           focus:ring-2 focus:ring-primary-500 focus:border-transparent
-           disabled:bg-gray-100 disabled:cursor-not-allowed
-           placeholder:text-gray-400;
-  }
-
-  .input-error {
-    @apply input border-red-500 focus:ring-red-500;
-  }
-
-  /* Card styles */
-  .card {
-    @apply bg-white rounded-lg shadow-card p-6;
-  }
-
-  .card-hover {
-    @apply card transition-shadow duration-200 hover:shadow-card-hover;
-  }
-
-  /* Container */
-  .container-custom {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-}
-
-/* Custom utilities */
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .animation-delay-200 {
-    animation-delay: 200ms;
-  }
-
-  .animation-delay-400 {
-    animation-delay: 400ms;
-  }
-
-  /* Gradient text */
-  .gradient-text {
-    @apply bg-gradient-to-r from-primary-600 to-secondary-600
-           bg-clip-text text-transparent;
-  }
-
-  /* Glass morphism */
-  .glass {
-    @apply bg-white/80 backdrop-blur-md border border-white/20;
-  }
-
-  /* Truncate multiple lines */
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-}
+<div className="text-secondary-600 hover:text-secondary-700">
+  Secondary text
+</div>
 ```
 
 ---
@@ -631,6 +449,410 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
 
 Input.displayName = 'Input';
 ```
+
+---
+
+## 🔷 Radix UI Component Pattern
+
+### Overview
+
+This project uses [Radix UI](https://www.radix-ui.com/) primitives for accessible, unstyled components. We follow a specific pattern to create reusable styled components:
+
+1. **Wrap Radix primitives** with fully-styled component versions
+2. **Include all base styling** (hover states, focus rings, responsive sizing, transitions)
+3. **Support className override** via the `cn()` helper for customization
+4. **Use forwardRef** for proper ref handling
+5. **Export individual components** for flexibility
+
+### Core Principles
+
+- **Mobile-first responsive design** - No separate mobile/desktop code
+- **Fully styled by default** - Components work out of the box
+- **Customizable via className** - Override styles when needed
+- **Accessible by default** - Radix handles ARIA attributes and keyboard navigation
+
+### Reference Implementation: NavigationMenu
+
+The NavigationMenu component is the reference implementation for this pattern.
+
+**File Structure:**
+
+```
+src/components/common/NavigationMenu/
+├── NavigationMenu.tsx    # All styled components
+└── index.ts              # Exports
+```
+
+**src/components/common/NavigationMenu/NavigationMenu.tsx:**
+
+```typescript
+import React from 'react';
+import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
+import { ChevronDown } from 'lucide-react';
+import { cn } from '@/utils/helpers';
+
+// NavigationMenuRoot - Wrapper component
+const NavigationMenuRoot = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root>
+>(({ className, children, ...props }, ref) => (
+  <NavigationMenuPrimitive.Root
+    ref={ref}
+    className={cn('relative z-10 flex w-full justify-center', className)}
+    {...props}
+  >
+    {children}
+  </NavigationMenuPrimitive.Root>
+));
+NavigationMenuRoot.displayName = 'NavigationMenuRoot';
+
+// NavigationMenuTrigger - Dropdown trigger with auto-chevron
+const NavigationMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger> & {
+    showChevron?: boolean;
+  }
+>(({ className, children, showChevron = true, ...props }, ref) => (
+  <NavigationMenuPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      // Layout & spacing
+      'group inline-flex items-center gap-1 px-3 py-2',
+      // Typography - mobile-first responsive
+      'text-sm sm:text-base font-medium text-gray-700',
+      // Hover states
+      'hover:text-primary-600 hover:bg-gray-50',
+      // Visual styling
+      'rounded-lg transition-colors',
+      // Focus states for accessibility
+      'focus:outline-none focus:ring-2 focus:ring-primary-500',
+      // Disabled state
+      'disabled:pointer-events-none disabled:opacity-50',
+      className
+    )}
+    {...props}
+  >
+    {children}
+    {showChevron && (
+      <ChevronDown
+        className="relative top-[1px] ml-1 h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180"
+        aria-hidden="true"
+      />
+    )}
+  </NavigationMenuPrimitive.Trigger>
+));
+NavigationMenuTrigger.displayName = 'NavigationMenuTrigger';
+
+// Export all styled components
+export {
+  NavigationMenuRoot,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuContent,
+  NavigationMenuLink,
+  NavigationMenuTrigger,
+  NavigationMenuIndicator,
+  NavigationMenuViewport,
+};
+```
+
+### Pattern Breakdown
+
+#### 1. Wrap Radix Primitive
+
+```typescript
+import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
+
+const NavigationMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger>
+>(({ className, children, ...props }, ref) => (
+  <NavigationMenuPrimitive.Trigger
+    ref={ref}
+    className={cn(/* styles */, className)}
+    {...props}
+  >
+    {children}
+  </NavigationMenuPrimitive.Trigger>
+));
+```
+
+**Key Points:**
+- Use `React.forwardRef` for ref forwarding
+- Destructure `className` from props
+- Spread remaining `...props` to preserve all Radix functionality
+- Pass `className` last in `cn()` so custom classes override defaults
+
+#### 2. Mobile-First Responsive Styling
+
+```typescript
+className={cn(
+  // Base mobile styles
+  'text-sm font-medium',
+  // Tablet and up
+  'sm:text-base',
+  // Desktop
+  'lg:gap-4',
+  className
+)}
+```
+
+**Do NOT create separate mobile/desktop implementations:**
+
+```typescript
+// ❌ BAD - Code duplication
+{isMobile ? (
+  <MobileMenu />
+) : (
+  <DesktopMenu />
+)}
+
+// ✅ GOOD - Single implementation with responsive classes
+<Menu className="flex-col md:flex-row text-sm md:text-base" />
+```
+
+#### 3. Include All Base Styling
+
+Every styled component should include:
+
+- **Layout**: `flex`, `inline-flex`, `grid`, spacing (`gap`, `px`, `py`)
+- **Typography**: `text-sm sm:text-base`, `font-medium`
+- **Colors**: `text-gray-700`, `bg-primary-600`
+- **Hover states**: `hover:text-primary-600`, `hover:bg-gray-50`
+- **Focus states**: `focus:outline-none focus:ring-2 focus:ring-primary-500`
+- **Transitions**: `transition-colors`, `transition-all`, `duration-200`
+- **Visual**: `rounded-lg`, `shadow-card`
+- **Disabled**: `disabled:opacity-50 disabled:cursor-not-allowed`
+
+#### 4. Support Custom Props
+
+Add component-specific props when needed:
+
+```typescript
+interface NavigationMenuTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger> {
+  showChevron?: boolean;  // Custom prop
+}
+
+const NavigationMenuTrigger = React.forwardRef<...>({
+  showChevron = true,  // Default value
+  ...
+}) => (
+  // Component implementation
+  {showChevron && <ChevronDown />}
+);
+```
+
+#### 5. Set displayName
+
+Always set `displayName` for better debugging and React DevTools:
+
+```typescript
+NavigationMenuTrigger.displayName = 'NavigationMenuTrigger';
+```
+
+### Usage in Feature Components
+
+**Before** (Navbar without common components):
+
+```typescript
+// 133 lines of repetitive styling
+<NavigationMenuPrimitive.Trigger
+  className="group inline-flex items-center gap-1 px-3 py-2 text-sm sm:text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
+>
+  Services
+  <ChevronDown className="relative top-[1px] ml-1 h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+</NavigationMenuPrimitive.Trigger>
+```
+
+**After** (Using common NavigationMenu):
+
+```typescript
+// 103 lines, clean and maintainable
+import {
+  NavigationMenuRoot,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
+  // ... other components
+} from '@/components/common';
+
+<NavigationMenuTrigger>Services</NavigationMenuTrigger>
+
+// Custom styling when needed
+<NavigationMenuTrigger className="text-red-600">
+  Special Item
+</NavigationMenuTrigger>
+
+// Disable auto-chevron if needed
+<NavigationMenuTrigger showChevron={false}>
+  No Arrow
+</NavigationMenuTrigger>
+```
+
+### Benefits
+
+1. **DRY (Don't Repeat Yourself)** - Styling defined once, used everywhere
+2. **Consistency** - All instances look the same by default
+3. **Maintainability** - Update styling in one place
+4. **Flexibility** - Override with custom classes when needed
+5. **Mobile-first** - Responsive by default, no code duplication
+6. **Accessible** - Radix handles ARIA, keyboard nav, focus management
+7. **Type-safe** - Full TypeScript support with prop types
+
+### Creating New Radix Components
+
+When adding a new Radix UI component, follow this checklist:
+
+1. **Install the Radix package**
+   ```bash
+   npm install @radix-ui/react-[component-name]
+   ```
+
+2. **Create component file**
+   ```
+   src/components/common/[ComponentName]/[ComponentName].tsx
+   ```
+
+3. **Import Radix primitive**
+   ```typescript
+   import * as ComponentPrimitive from '@radix-ui/react-[component-name]';
+   ```
+
+4. **Wrap each primitive** with styled version using `forwardRef`
+
+5. **Add base styling** (layout, colors, hover, focus, transitions, responsive)
+
+6. **Support className override** via `cn()` helper
+
+7. **Add custom props** if needed (e.g., `showChevron`, `variant`)
+
+8. **Set displayName** for each component
+
+9. **Export from index.ts**
+
+10. **Add to common/index.ts** for easy imports
+
+### Radix UI Components in Use
+
+Current Radix UI components in the project:
+
+- **NavigationMenu** - Main navigation with dropdowns (reference implementation)
+- **Dialog** - Modals and dialogs
+- **DropdownMenu** - User menu, action menus
+- **Select** - Form select inputs
+- **Avatar** - User avatars with fallback
+- **Checkbox** - Form checkboxes
+- **Switch** - Toggle switches
+- **Tooltip** - Hover tooltips
+- **Separator** - Divider lines
+- **Label** - Form labels
+- **Slot** - Composition primitive for `asChild` pattern
+
+All follow the same pattern: styled wrappers with className override support.
+
+### Text Component - Typography Pattern
+
+**IMPORTANT**: Never use raw HTML text tags (`h1`-`h6`, `p`, `span`) directly. Always use the `Text` component for consistent typography.
+
+The `Text` component is a polymorphic typography component that replaces all text HTML elements with a consistent, responsive, and themeable system.
+
+**src/components/common/Text/Text.tsx:**
+
+```typescript
+import React from 'react';
+import { cn } from '@/utils/helpers';
+
+type TextElement = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'div' | 'label';
+
+type TextVariant =
+  | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+  | 'body-lg' | 'body' | 'body-sm'
+  | 'caption' | 'overline';
+
+type TextWeight = 'light' | 'normal' | 'medium' | 'semibold' | 'bold';
+
+type TextColor = 'primary' | 'secondary' | 'muted' | 'success' | 'warning' | 'error' | 'info';
+
+interface TextProps extends React.HTMLAttributes<HTMLElement> {
+  as?: TextElement;          // HTML element to render (default: auto-selected based on variant)
+  variant?: TextVariant;     // Typography variant (default: 'body')
+  weight?: TextWeight;       // Font weight (default: varies by variant)
+  color?: TextColor;         // Theme color (default: inherits)
+  truncate?: boolean;        // Truncate with ellipsis (default: false)
+  center?: boolean;          // Center align text (default: false)
+  italic?: boolean;          // Apply italic styling (default: false)
+  className?: string;        // Additional classes
+  children: React.ReactNode;
+}
+
+export const Text = React.forwardRef<HTMLElement, TextProps>((props, ref) => {
+  // Implementation uses React.createElement for polymorphic rendering
+  // Full implementation in src/components/common/Text/Text.tsx
+});
+```
+
+**Usage Examples:**
+
+```typescript
+// Replace h1-h6
+// ❌ BAD
+<h1 className="text-3xl font-bold text-gray-900">Welcome</h1>
+
+// ✅ GOOD
+<Text variant="h1">Welcome</Text>
+<Text variant="h1" className="text-center">Welcome</Text>
+
+// Replace paragraphs
+// ❌ BAD
+<p className="text-sm text-gray-600">Description text</p>
+
+// ✅ GOOD
+<Text variant="body-sm" color="muted">Description text</Text>
+
+// Replace spans
+// ❌ BAD
+<span className="font-medium text-gray-900">Label</span>
+
+// ✅ GOOD
+<Text as="span" weight="medium">Label</Text>
+
+// Override element while keeping variant styles
+<Text as="label" variant="body-sm" weight="medium">
+  Form Label
+</Text>
+
+// Use theme colors
+<Text variant="h2" color="primary">Primary Title</Text>
+<Text variant="body" color="error">Error message</Text>
+
+// Utility props
+<Text variant="body" truncate>Very long text that will be truncated...</Text>
+<Text variant="h3" center>Centered heading</Text>
+<Text variant="caption" italic>Italic caption</Text>
+
+// Responsive typography (built-in)
+<Text variant="h1">
+  {/* Automatically responsive: text-3xl sm:text-4xl lg:text-5xl */}
+  Responsive Heading
+</Text>
+```
+
+**Variants:**
+- `h1`-`h6`: Heading variants with responsive sizing and default bold/semibold weights
+- `body-lg`, `body`, `body-sm`: Body text variants with relaxed line-height
+- `caption`: Small text for captions and helper text
+- `overline`: Uppercase text with tracking for labels
+
+**Color Props:**
+Maps to theme colors: `primary`, `secondary`, `muted`, `success`, `warning`, `error`, `info`
+
+**Why Use Text Component?**
+1. **Consistency**: All text uses the same typography scale
+2. **Responsive**: Mobile-first responsive sizing built-in
+3. **Themeable**: Theme colors via props instead of utility classes
+4. **Maintainability**: Update typography globally in one place
+5. **Type-safe**: Full TypeScript support with proper element types
+6. **Semantic**: Choose correct HTML element while maintaining visual style
 
 ---
 
@@ -1231,9 +1453,36 @@ export const Image: React.FC<ImageProps> = ({
 
 ### Core Principles
 
-#### 1. **NEVER Use Hardcoded Values**
+#### 1. **Use Radix UI Pattern for Reusable Components**
 
-All colors, spacing, and design values MUST use theme tokens from `tailwind.config.js`.
+When creating reusable UI components, follow the established Radix UI pattern:
+
+- Wrap Radix primitives with fully-styled versions
+- Include all base styling (hover, focus, responsive, transitions)
+- Support className override via `cn()` helper
+- Use `forwardRef` for proper ref handling
+- Mobile-first responsive - NO separate mobile/desktop code
+- See the [Radix UI Component Pattern](#-radix-ui-component-pattern) section for details
+
+```typescript
+// ✅ GOOD - Styled Radix component with className override
+import { NavigationMenuTrigger } from '@/components/common';
+
+<NavigationMenuTrigger>Services</NavigationMenuTrigger>
+<NavigationMenuTrigger className="text-red-600">Custom Color</NavigationMenuTrigger>
+
+// ❌ BAD - Repetitive inline styling
+<NavigationMenuPrimitive.Trigger className="group inline-flex items-center gap-1 px-3 py-2 text-sm sm:text-base font-medium text-gray-700 hover:text-primary-600...">
+  Services
+</NavigationMenuPrimitive.Trigger>
+
+// ❌ BAD - Separate mobile/desktop implementations
+{isMobile ? <MobileNav /> : <DesktopNav />}
+```
+
+#### 2. **NEVER Use Hardcoded Values**
+
+All colors, spacing, and design values MUST use theme tokens defined in the `@theme` directive (Tailwind v4).
 
 ```typescript
 // ✅ GOOD - Use design tokens

@@ -201,13 +201,213 @@ Web-React/
 #### 🎨 Common Components (`/components/common`)
 
 - **Purpose**: Generic, reusable UI components with no business logic
-- **Examples**: Button, Input, Card, Modal, Loader
+- **Examples**: Button, Input, Card, Modal, Loader, Text, NavigationMenu
 - **Characteristics**:
     - Zero business logic
     - Highly configurable via props
     - Include TypeScript prop types
-    - Styled with Tailwind CSS
+    - Styled with Tailwind CSS v4 using `@theme` directive
     - Include accessibility features
+    - Follow established component patterns (see below)
+
+---
+
+### 🔷 Common Component Patterns
+
+**CRITICAL**: All common components MUST follow these established patterns for consistency and maintainability.
+
+#### 📐 Pattern 1: Radix UI Component Wrapper
+
+For components using Radix UI primitives (NavigationMenu, Dialog, Select, etc.), follow this pattern:
+
+**Requirements:**
+1. **Wrap Radix primitives** with fully-styled component versions
+2. **Include all base styling** (hover states, focus rings, responsive sizing, transitions)
+3. **Support className override** via `cn()` helper for customization
+4. **Use forwardRef** for proper ref handling
+5. **Mobile-first responsive** - NO separate mobile/desktop code
+6. **Export individual components** for flexibility
+
+**Reference Implementation:** See `NavigationMenu` component in STYLING_GUIDE.md
+
+```typescript
+// Pattern example
+const NavigationMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger>
+>(({ className, children, ...props }, ref) => (
+  <NavigationMenuPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      // Layout & spacing
+      'group inline-flex items-center gap-1 px-3 py-2',
+      // Typography - mobile-first responsive
+      'text-sm sm:text-base font-medium text-gray-700',
+      // Hover states
+      'hover:text-primary-600 hover:bg-gray-50',
+      // Visual styling
+      'rounded-lg transition-colors',
+      // Focus states for accessibility
+      'focus:outline-none focus:ring-2 focus:ring-primary-500',
+      // Disabled state
+      'disabled:pointer-events-none disabled:opacity-50',
+      className // Allow override
+    )}
+    {...props}
+  >
+    {children}
+  </NavigationMenuPrimitive.Trigger>
+));
+NavigationMenuTrigger.displayName = 'NavigationMenuTrigger';
+```
+
+#### 📝 Pattern 2: Text Component for Typography
+
+**CRITICAL RULE**: NEVER use raw HTML text elements (`h1`-`h6`, `p`, `span`) directly. Always use the `Text` component.
+
+The `Text` component is a polymorphic typography component that provides:
+- Consistent responsive sizing
+- Theme color integration
+- Typography scale
+- Semantic HTML flexibility
+
+```typescript
+// ❌ BAD - Raw HTML tags
+<h1 className="text-3xl font-bold text-gray-900">Title</h1>
+<p className="text-sm text-gray-600">Description</p>
+<span className="font-medium">Label</span>
+
+// ✅ GOOD - Text component
+<Text variant="h1">Title</Text>
+<Text variant="body-sm" color="muted">Description</Text>
+<Text as="span" weight="medium">Label</Text>
+
+// ✅ GOOD - Override element while keeping variant styles
+<Text as="label" variant="body-sm" weight="medium">Form Label</Text>
+<Text as="h2" variant="h1" className="text-center">Custom styled heading</Text>
+```
+
+**Available variants:**
+- Headings: `h1`, `h2`, `h3`, `h4`, `h5`, `h6`
+- Body: `body-lg`, `body`, `body-sm`
+- Special: `caption`, `overline`
+
+**Props:**
+- `as`: HTML element to render (auto-selected by variant if not specified)
+- `variant`: Typography variant (default: `'body'`)
+- `weight`: Font weight (`light`, `normal`, `medium`, `semibold`, `bold`)
+- `color`: Theme color (`primary`, `secondary`, `muted`, `success`, `warning`, `error`, `info`)
+- `truncate`, `center`, `italic`: Utility boolean props
+- `className`: Additional custom classes
+
+#### 🎨 Pattern 3: Styling Best Practices
+
+**CRITICAL RULES:**
+
+1. **NO Hardcoded Values**
+   ```typescript
+   // ❌ BAD
+   <div style={{ backgroundColor: '#0284c7', padding: '13px' }}>Content</div>
+   <div className="bg-[#0284c7] p-[13px]">Content</div>
+
+   // ✅ GOOD
+   <div className="bg-primary-600 p-4">Content</div>
+   ```
+
+2. **Mobile-First Responsive**
+   ```typescript
+   // ❌ BAD - Separate implementations
+   {isMobile ? <MobileNav /> : <DesktopNav />}
+
+   // ✅ GOOD - Single implementation with responsive classes
+   <Nav className="flex-col md:flex-row text-sm md:text-base" />
+   ```
+
+3. **Use cn() Helper for Conditional Classes**
+   ```typescript
+   // ✅ GOOD
+   import { cn } from '@/utils/helpers';
+
+   className={cn(
+     'base-styles',
+     variant === 'primary' && 'bg-primary-600',
+     isActive && 'ring-2',
+     className // Allow override
+   )}
+   ```
+
+4. **Theme Colors Only**
+   - Use: `bg-primary-600`, `text-secondary-700`, `border-success-500`
+   - Never: hex codes, RGB values, or arbitrary colors
+
+5. **Include All States**
+   Every interactive component must include:
+   - Hover: `hover:bg-primary-700`
+   - Focus: `focus:outline-none focus:ring-2 focus:ring-primary-500`
+   - Active: `active:bg-primary-800`
+   - Disabled: `disabled:opacity-50 disabled:cursor-not-allowed`
+   - Transitions: `transition-colors duration-200`
+
+#### 🔧 Pattern 4: Component Structure
+
+All common components should follow this structure:
+
+```typescript
+// 1. Imports
+import React from 'react';
+import { cn } from '@/utils/helpers';
+import { Text } from '../Text'; // Use Text for typography
+
+// 2. Type definitions
+interface ComponentProps extends React.HTMLAttributes<HTMLElement> {
+  variant?: 'primary' | 'secondary';
+  size?: 'sm' | 'md' | 'lg';
+  children: React.ReactNode;
+}
+
+// 3. Component with forwardRef (if needed)
+export const Component = React.forwardRef<HTMLElement, ComponentProps>(
+  ({ variant = 'primary', size = 'md', className, children, ...props }, ref) => {
+    // 4. Style constants
+    const baseStyles = '...';
+    const variants = { ... };
+    const sizes = { ... };
+
+    // 5. Render
+    return (
+      <element
+        ref={ref}
+        className={cn(baseStyles, variants[variant], sizes[size], className)}
+        {...props}
+      >
+        {children}
+      </element>
+    );
+  }
+);
+
+// 6. Display name
+Component.displayName = 'Component';
+```
+
+#### ✅ Pattern Checklist
+
+Before creating/modifying a common component, verify:
+
+- [ ] Uses Radix UI wrapper pattern (if applicable)
+- [ ] Uses Text component for all text content
+- [ ] Mobile-first responsive design (no separate mobile/desktop)
+- [ ] NO hardcoded values (uses theme tokens)
+- [ ] Supports className override via cn()
+- [ ] Uses forwardRef for ref forwarding
+- [ ] Includes all interaction states (hover, focus, active, disabled)
+- [ ] Includes transitions
+- [ ] Has displayName set
+- [ ] TypeScript prop interface defined
+- [ ] Exported from index.ts
+- [ ] Added to common/index.ts for easy imports
+
+---
 
 **Example: Button Component**
 

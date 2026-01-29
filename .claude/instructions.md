@@ -103,7 +103,14 @@ This is a full-stack online salon service booking application with:
 - **State Management**: Local state → React Query → Redux (in order of preference)
 - **Hooks**: Custom hooks for all API calls using React Query
 - **Forms**: React Hook Form + Yup/Zod validation
-- **Styling**: Tailwind CSS utility classes (NO inline styles)
+- **Styling**: Tailwind CSS v4 with `@theme` directive (NO inline styles, NO hardcoded values)
+- **UI Components**: Radix UI primitives wrapped with styled versions
+  - Wrap Radix primitives with fully-styled components
+  - Include all base styling (hover, focus, responsive, transitions)
+  - Support className override via `cn()` helper
+  - Mobile-first responsive design (NO separate mobile/desktop code)
+  - Use `forwardRef` for proper ref handling
+  - Reference implementation: NavigationMenu component
 - **TypeScript**: Define prop interfaces for all components
 - **Testing**: Test behavior with React Testing Library
 
@@ -133,9 +140,12 @@ This is a full-stack online salon service booking application with:
 ### React
 - ❌ NO class components (use functional components)
 - ❌ NO inline styles (use Tailwind classes)
+- ❌ NO hardcoded values (use `@theme` tokens: `bg-primary-600` not `bg-[#2563eb]`)
 - ❌ NO direct API calls in components (use custom hooks)
 - ❌ NO prop drilling (use Context or Redux when appropriate)
 - ❌ NO missing TypeScript types
+- ❌ NO separate mobile/desktop code (use responsive classes: `text-sm sm:text-base md:text-lg`)
+- ❌ NO repetitive Radix UI styling (create styled wrappers in common/)
 
 ### Vue
 - ❌ NO Options API (use Composition API)
@@ -175,12 +185,18 @@ This is a full-stack online salon service booking application with:
 11. Add Swagger documentation
 
 ### React Feature (e.g., Reviews Component)
-1. Read [Web-React/docs/ARCHITECTURE.md](../Web-React/docs/ARCHITECTURE.md)
+1. Read [Web-React/docs/ARCHITECTURE.md](../Web-React/docs/ARCHITECTURE.md) and [STYLING_GUIDE](../Web-React/docs/STYLING_GUIDE.md)
 2. Define types in `/types/review.types.ts`
 3. Create API functions in `/api/reviews.api.ts`
 4. Create custom hook in `/hooks/useReviews.ts` with React Query
-5. Create component in `/components/reviews/ReviewCard/`
-6. Style with Tailwind CSS (see [STYLING_GUIDE](../Web-React/docs/STYLING_GUIDE.md))
+5. If using Radix UI:
+   - Check if styled wrapper exists in `/components/common/`
+   - If not, create styled wrapper following NavigationMenu pattern
+   - Export from `common/index.ts`
+6. Create component in `/components/reviews/ReviewCard/`
+   - Use Tailwind v4 theme tokens (NEVER hardcoded values)
+   - Mobile-first responsive (NEVER separate mobile/desktop code)
+   - Import styled Radix components from `common/` if needed
 7. Add form with React Hook Form (see [DEVELOPER_GUIDE](../Web-React/docs/DEVELOPER_GUIDE.md))
 8. Write component tests with React Testing Library
 9. Create page component if needed
@@ -437,12 +453,333 @@ export const querySchema = z.object({
 });
 ```
 
+## 🎨 Tailwind CSS v4 with @theme Directive
+
+This project uses **Tailwind CSS v4** with the new `@theme` directive for defining design tokens.
+
+### Configuration
+
+**NO `tailwind.config.js` file** - Tailwind v4 uses PostCSS-only configuration.
+
+**postcss.config.mjs:**
+```javascript
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+}
+```
+
+### Theme Definition
+
+All custom colors are defined in `src/index.css` using the `@theme` directive:
+
+```css
+@import "tailwindcss";
+
+@theme {
+  /* Primary Colors (Blue) */
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  /* ... full color scale */
+
+  /* Secondary Colors (Purple) */
+  --color-secondary-600: #9333ea;
+  /* ... full color scale */
+
+  /* Success, Warning, Error, Info scales */
+}
+```
+
+### Usage
+
+```typescript
+// ✅ GOOD - Use theme tokens
+<div className="bg-primary-600 text-white hover:bg-primary-700">
+  Button
+</div>
+
+// ❌ BAD - Hardcoded hex codes or arbitrary values
+<div className="bg-[#2563eb]" style={{ color: '#ffffff' }}>
+  Button
+</div>
+```
+
+### Key Differences from Tailwind v3
+
+1. **No `@tailwind` directives** - Use `@import "tailwindcss"` instead
+2. **No `@layer` directive** - Tailwind v4 handles layers automatically
+3. **Use `@theme` for custom tokens** - Replaces `theme.extend` in config
+4. **CSS custom properties** - All theme values are `--color-*`, `--spacing-*`, etc.
+
+## 🧩 Radix UI Component Pattern
+
+This project uses [Radix UI](https://www.radix-ui.com/) for accessible, unstyled component primitives.
+
+### Pattern: Styled Wrappers
+
+**ALWAYS wrap Radix primitives** with fully-styled versions in `src/components/common/`:
+
+1. **Wrap the primitive** with a styled component
+2. **Include all base styling** (hover, focus, responsive, transitions)
+3. **Support className override** via `cn()` helper
+4. **Use forwardRef** for proper ref handling
+5. **Mobile-first responsive** - NO separate mobile/desktop implementations
+6. **Set displayName** for debugging
+
+### Reference Implementation: NavigationMenu
+
+**src/components/common/NavigationMenu/NavigationMenu.tsx:**
+
+```typescript
+import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
+import { cn } from '@/utils/helpers';
+
+const NavigationMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger> & {
+    showChevron?: boolean;
+  }
+>(({ className, children, showChevron = true, ...props }, ref) => (
+  <NavigationMenuPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      // Layout & spacing
+      'group inline-flex items-center gap-1 px-3 py-2',
+      // Typography - mobile-first responsive
+      'text-sm sm:text-base font-medium text-gray-700',
+      // Hover states
+      'hover:text-primary-600 hover:bg-gray-50',
+      // Visual
+      'rounded-lg transition-colors',
+      // Focus for accessibility
+      'focus:outline-none focus:ring-2 focus:ring-primary-500',
+      // Disabled
+      'disabled:pointer-events-none disabled:opacity-50',
+      // Custom classes override defaults (must be last)
+      className
+    )}
+    {...props}
+  >
+    {children}
+    {showChevron && <ChevronDown className="..." />}
+  </NavigationMenuPrimitive.Trigger>
+));
+NavigationMenuTrigger.displayName = 'NavigationMenuTrigger';
+```
+
+### Usage in Feature Components
+
+```typescript
+// ✅ GOOD - Use styled wrapper from common/
+import { NavigationMenuTrigger } from '@/components/common';
+
+<NavigationMenuTrigger>Services</NavigationMenuTrigger>
+<NavigationMenuTrigger className="text-red-600">Custom</NavigationMenuTrigger>
+
+// ❌ BAD - Direct Radix usage with inline styling
+import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
+
+<NavigationMenuPrimitive.Trigger className="group inline-flex items-center gap-1 px-3 py-2 text-sm sm:text-base font-medium text-gray-700 hover:text-primary-600...">
+  Services
+</NavigationMenuPrimitive.Trigger>
+```
+
+### Mobile-First Responsive Design
+
+**CRITICAL**: NEVER create separate mobile/desktop implementations.
+
+```typescript
+// ✅ GOOD - Single implementation with responsive classes
+<div className="flex-col md:flex-row gap-2 md:gap-4">
+  <h1 className="text-2xl sm:text-3xl lg:text-4xl">Title</h1>
+  <button className="px-4 py-2 text-sm sm:text-base">Click</button>
+</div>
+
+// ❌ BAD - Separate mobile/desktop code
+{isMobile ? (
+  <MobileMenu />
+) : (
+  <DesktopMenu />
+)}
+
+// ❌ BAD - Duplicate implementations
+<div className="block md:hidden">
+  <nav><!-- Mobile nav items --></nav>
+</div>
+<div className="hidden md:block">
+  <nav><!-- Desktop nav items (duplicated) --></nav>
+</div>
+```
+
+### Creating New Radix Components
+
+When adding a new Radix UI component:
+
+1. Install: `npm install @radix-ui/react-[component-name]`
+2. Create: `src/components/common/[ComponentName]/[ComponentName].tsx`
+3. Import primitive: `import * as ComponentPrimitive from '@radix-ui/react-[component-name]'`
+4. Wrap with `forwardRef` and add full styling
+5. Support `className` override (pass as last arg to `cn()`)
+6. Add custom props if needed (e.g., `showChevron`, `variant`)
+7. Set `displayName`
+8. Export from `common/index.ts`
+
+### Available Radix Components
+
+- NavigationMenu (reference implementation)
+- Dialog, DropdownMenu, Select
+- Avatar, Checkbox, Switch, Tooltip
+- Separator, Label, Slot
+
+All follow the same pattern.
+
+## 📝 Text Component - Typography Pattern
+
+**CRITICAL RULE**: NEVER use raw HTML text elements (`h1`-`h6`, `p`, `span`) directly in React components.
+
+**ALWAYS use the `Text` component** for all text content to ensure consistent typography, responsive sizing, and theme integration.
+
+### Why Text Component?
+
+1. **Consistency**: All text uses the same typography scale
+2. **Responsive**: Mobile-first responsive sizing built-in (no manual breakpoints)
+3. **Themeable**: Theme colors via props (`color="primary"`) instead of utility classes
+4. **Maintainable**: Update typography globally in one place
+5. **Type-safe**: Full TypeScript support with proper element types
+6. **Semantic**: Choose correct HTML element while maintaining visual style
+
+### Usage Examples
+
+```typescript
+// ❌ BAD - Raw HTML tags
+<h1 className="text-3xl font-bold text-gray-900">Welcome</h1>
+<p className="text-sm text-gray-600">Description</p>
+<span className="font-medium">Label</span>
+
+// ✅ GOOD - Text component
+import { Text } from '@/components/common';
+
+<Text variant="h1">Welcome</Text>
+<Text variant="body-sm" color="muted">Description</Text>
+<Text as="span" weight="medium">Label</Text>
+
+// Override element while keeping variant styles
+<Text as="label" variant="body-sm" weight="medium">
+  Form Label
+</Text>
+
+// Use theme colors
+<Text variant="h2" color="primary">Primary Title</Text>
+<Text variant="body" color="error">Error message</Text>
+
+// Utility props
+<Text variant="body" truncate>Very long text...</Text>
+<Text variant="h3" center>Centered heading</Text>
+<Text variant="caption" italic>Italic caption</Text>
+```
+
+### Available Props
+
+**`variant`** (Typography style):
+- Headings: `h1`, `h2`, `h3`, `h4`, `h5`, `h6`
+- Body: `body-lg`, `body`, `body-sm`
+- Special: `caption`, `overline`
+
+**`as`** (HTML element):
+- Override element: `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `p`, `span`, `div`, `label`
+- Auto-selected based on variant if not specified
+
+**`weight`** (Font weight):
+- `light`, `normal`, `medium`, `semibold`, `bold`
+- Auto-selected based on variant if not specified
+
+**`color`** (Theme color):
+- `primary`, `secondary`, `muted`, `success`, `warning`, `error`, `info`
+- Inherits from parent if not specified
+
+**Utility props**:
+- `truncate`: Truncate with ellipsis
+- `center`: Center align text
+- `italic`: Apply italic styling
+- `className`: Additional custom classes
+
+### Pattern in Components
+
+```typescript
+// ✅ GOOD - Complete example
+import { Text } from '@/components/common';
+
+export const ServiceCard = ({ service }) => {
+  return (
+    <Card>
+      <Text as="h3" variant="h5" className="mb-2">
+        {service.name}
+      </Text>
+      <Text variant="body-sm" color="muted" className="mb-4">
+        {service.description}
+      </Text>
+      <div className="flex items-center gap-2">
+        <Text as="span" variant="body-sm">Duration:</Text>
+        <Text as="span" variant="body-sm" weight="medium">
+          {service.duration} mins
+        </Text>
+      </div>
+    </Card>
+  );
+};
+
+// ❌ BAD - Raw HTML tags
+export const ServiceCard = ({ service }) => {
+  return (
+    <Card>
+      <h3 className="text-xl font-semibold mb-2">{service.name}</h3>
+      <p className="text-sm text-gray-500 mb-4">{service.description}</p>
+      <div className="flex items-center gap-2">
+        <span className="text-sm">Duration:</span>
+        <span className="text-sm font-medium">{service.duration} mins</span>
+      </div>
+    </Card>
+  );
+};
+```
+
+### When to Use Which Variant
+
+- **Page titles**: `variant="h1"`
+- **Section headings**: `variant="h2"` or `variant="h3"`
+- **Card titles**: `variant="h4"` or `variant="h5"`
+- **Small headings**: `variant="h6"`
+- **Large body text**: `variant="body-lg"`
+- **Normal body text**: `variant="body"` (default)
+- **Small body text**: `variant="body-sm"`
+- **Helper text/captions**: `variant="caption"`
+- **Labels/tags**: `variant="overline"`
+
+### Responsive Typography
+
+All variants have built-in responsive sizing:
+
+```typescript
+// Automatically responsive (no manual breakpoints needed)
+<Text variant="h1">
+  {/* Renders as: text-3xl sm:text-4xl lg:text-5xl */}
+  Responsive Heading
+</Text>
+
+<Text variant="body">
+  {/* Renders as: text-sm sm:text-base */}
+  Responsive body text
+</Text>
+```
+
 ## 🎨 Styling Standards
 
 **ALWAYS use Tailwind CSS utility classes:**
-- Responsive: `sm:`, `md:`, `lg:`, `xl:` prefixes
+- Responsive: `sm:`, `md:`, `lg:`, `xl:` prefixes (mobile-first)
 - Dark mode: `dark:` prefix
 - States: `hover:`, `focus:`, `active:` prefixes
+- Theme tokens: `bg-primary-600`, `text-secondary-700` (NEVER hardcoded hex)
 - See full guide: [STYLING_GUIDE.md](../Web-React/docs/STYLING_GUIDE.md) or [STYLING_GUIDE.md](../Web-Vue/docs/STYLING_GUIDE.md)
 
 ## 🧪 Testing Standards
