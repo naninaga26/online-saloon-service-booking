@@ -1229,51 +1229,218 @@ export const Image: React.FC<ImageProps> = ({
 
 ## 📝 Best Practices
 
-### Do's and Don'ts
+### Core Principles
+
+#### 1. **NEVER Use Hardcoded Values**
+
+All colors, spacing, and design values MUST use theme tokens from `tailwind.config.js`.
 
 ```typescript
-// ✅ DO: Use semantic HTML
-<nav>
-  <ul>
-    <li><a href="/">Home</a></li>
-  </ul>
-</nav>
-
-// ❌ DON'T: Use divs for everything
-<div>
-  <div>
-    <div onClick={handleClick}>Home</div>
-  </div>
+// ✅ GOOD - Use design tokens
+<div className="bg-primary-600 text-white p-4 rounded-lg">
+  Content
 </div>
 
-// ✅ DO: Use consistent spacing
-<div className="space-y-4">
-  <div>Item 1</div>
-  <div>Item 2</div>
+// ❌ BAD - Hardcoded hex codes
+<div style={{ backgroundColor: '#0284c7', padding: '13px' }}>
+  Content
 </div>
 
-// ❌ DON'T: Use arbitrary margins
-<div style={{ marginBottom: '17px' }}>Item 1</div>
-<div style={{ marginBottom: '23px' }}>Item 2</div>
-
-// ✅ DO: Mobile-first responsive
-<div className="text-base md:text-lg lg:text-xl">
-  Text
-</div>
-
-// ❌ DON'T: Desktop-first
-<div className="text-xl lg:text-base">
-  Text
+// ❌ BAD - Arbitrary Tailwind values
+<div className="bg-[#0284c7] p-[13px] rounded-[7px]">
+  Content
 </div>
 ```
 
-### Performance Tips
+**Why?** Design tokens ensure consistent branding, easy theme updates, better maintainability, and accessibility compliance.
 
-1. **Use PurgeCSS**: Vite automatically removes unused CSS
-2. **Avoid arbitrary values**: Use design tokens when possible
-3. **Group similar utilities**: Keep related classes together
-4. **Use @apply sparingly**: Prefer utility classes in JSX
-5. **Optimize images**: Use next-gen formats (WebP) and lazy loading
+#### 2. **Mobile-First Responsive Design**
+
+Start with mobile styles, then scale up to larger screens.
+
+```typescript
+// ✅ GOOD - Mobile first
+<div className="px-4 sm:px-6 lg:px-8">
+  <h1 className="text-2xl sm:text-3xl lg:text-4xl">
+    Responsive Heading
+  </h1>
+</div>
+
+// ❌ BAD - Desktop first
+<div className="px-8 lg:px-6 sm:px-4">
+  <h1 className="text-4xl lg:text-3xl sm:text-2xl">
+    Heading
+  </h1>
+</div>
+```
+
+#### 3. **Utility-First, Components Second**
+
+Use utility classes directly in JSX. Extract to components only when patterns repeat 3+ times.
+
+```typescript
+// ✅ GOOD - Utility classes in JSX
+<button className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+  Click me
+</button>
+
+// ⚠️ ACCEPTABLE - Extract when reused 3+ times
+export const Button = ({ children, variant = 'primary' }) => (
+  <button className={cn(
+    'px-4 py-2 rounded-lg transition-colors',
+    variant === 'primary' && 'bg-primary-600 text-white hover:bg-primary-700'
+  )}>
+    {children}
+  </button>
+);
+```
+
+#### 4. **Accessibility First**
+
+Every interactive element must have visible focus states, keyboard navigation support, proper ARIA labels, and sufficient color contrast.
+
+### Semantic HTML
+
+Always use proper semantic HTML elements instead of generic `<div>` and `<span>`.
+
+```typescript
+// ✅ GOOD - Semantic HTML
+<nav aria-label="Main navigation">
+  <ul className="flex gap-4">
+    <li><a href="/" className="text-primary-600 hover:text-primary-700">Home</a></li>
+    <li><a href="/services">Services</a></li>
+  </ul>
+</nav>
+
+<main id="main-content">
+  <article>
+    <header>
+      <h1 className="text-3xl font-bold">Article Title</h1>
+      <time dateTime="2024-01-29">January 29, 2024</time>
+    </header>
+  </article>
+</main>
+
+// ❌ BAD - Generic divs everywhere
+<div>
+  <div className="flex gap-4">
+    <div onClick={goHome}>Home</div>
+    <div onClick={goServices}>Services</div>
+  </div>
+</div>
+```
+
+**Heading Hierarchy**: Maintain proper heading hierarchy (`h1` → `h2` → `h3`). Never skip levels.
+
+**Form Labels**: Every form input must have an explicit label with `htmlFor` attribute.
+
+### Design Tokens
+
+**Spacing Scale**: Use standard spacing (multiples of 4px): `p-1` (4px), `p-2` (8px), `p-4` (16px), `p-6` (24px), `p-8` (32px)
+
+**Typography Scale**: Use the typography scale for consistent text sizing: `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl`
+
+**Color System**: Always use theme colors (`bg-primary-600`, `text-success-700`) - NEVER hardcoded hex codes
+
+### Performance Best Practices
+
+#### 1. Avoid Arbitrary Values
+
+Arbitrary values bloat the CSS bundle and bypass design tokens.
+
+```typescript
+// ✅ GOOD - Use design tokens
+<div className="p-4 text-base bg-primary-600">Content</div>
+
+// ❌ BAD - Arbitrary values
+<div className="p-[17px] text-[14.5px] bg-[#0284c7]">Content</div>
+```
+
+#### 2. Group Related Utilities
+
+Keep related classes together for readability.
+
+```typescript
+// ✅ GOOD - Grouped by concern
+<button className={cn(
+  // Layout
+  'flex items-center gap-2 px-4 py-2',
+  // Typography
+  'text-base font-medium',
+  // Colors
+  'bg-primary-600 text-white',
+  // States
+  'hover:bg-primary-700 focus:ring-2 focus:ring-primary-500',
+  // Transitions
+  'transition-colors duration-200'
+)}>
+  Button
+</button>
+```
+
+#### 3. Use @apply Sparingly
+
+Prefer utility classes in JSX. Use `@apply` only for truly global base styles.
+
+#### 4. Optimize Images
+
+Always use lazy loading and proper sizing classes.
+
+```typescript
+<img
+  src="/images/service.jpg"
+  alt="Haircut service"
+  loading="lazy"
+  className="w-full h-48 object-cover rounded-lg"
+/>
+```
+
+### Common Pitfalls
+
+#### 1. Missing Focus States
+
+```typescript
+// ❌ BAD - Removes focus outline without replacement
+<button className="outline-none">Button</button>
+
+// ✅ GOOD - Custom focus ring
+<button className="focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+  Button
+</button>
+```
+
+#### 2. Conflicting Classes
+
+```typescript
+// ❌ CONFUSING - Last class wins
+<div className="p-4 p-6">{/* Actual padding: p-6 */}</div>
+
+// ✅ BETTER - Use cn() helper for conditional styling
+<div className={cn('p-4', isLarge && 'p-6')}>Content</div>
+```
+
+#### 3. Over-Nesting Responsive Classes
+
+```typescript
+// ❌ BAD - Too complex
+<div className="p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 2xl:p-8">Content</div>
+
+// ✅ BETTER - Simplified
+<div className="p-4 lg:p-6 xl:p-8">Content</div>
+```
+
+### Quality Assurance Checklist
+
+For every new component/page:
+
+- [ ] **Keyboard Navigation**: Tab through all interactive elements
+- [ ] **Screen Reader**: Test with VoiceOver (macOS) or NVDA (Windows)
+- [ ] **Responsive**: Check layouts at `sm`, `md`, `lg`, `xl` breakpoints
+- [ ] **Focus States**: All interactive elements have visible focus rings
+- [ ] **Color Contrast**: Text meets WCAG 2.1 AA standards (4.5:1 ratio)
+- [ ] **Semantic HTML**: Proper use of semantic elements
+- [ ] **No Hardcoded Values**: All values use design tokens
+- [ ] **Cross-Browser**: Test on Chrome, Firefox, Safari
 
 ### Consistency Guidelines
 
@@ -1282,6 +1449,8 @@ export const Image: React.FC<ImageProps> = ({
 - Follow typography scale (text-sm, text-base, text-lg, etc.)
 - Use consistent border radius (rounded-lg for most elements)
 - Apply consistent shadow scale (shadow-card, shadow-card-hover)
+- NEVER use inline styles or arbitrary values
+- Mobile-first responsive design always
 
 ---
 
