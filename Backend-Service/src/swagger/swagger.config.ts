@@ -1,4 +1,7 @@
 import config from '../config/environment';
+import { healthPaths } from './paths/health.paths';
+import { authPaths } from './paths/auth.paths';
+import { userPaths } from './paths/user.paths';
 
 export const swaggerSpec = {
   openapi: '3.0.0',
@@ -22,47 +25,13 @@ export const swaggerSpec = {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
+        description: 'Enter your JWT token in the format: Bearer <token>',
       },
     },
   },
   paths: {
-    '/health': {
-      get: {
-        summary: 'Health check endpoint',
-        description: 'Returns the health status of the server',
-        tags: ['Health'],
-        responses: {
-          '200': {
-            description: 'Server is healthy',
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    success: {
-                      type: 'boolean',
-                      example: true,
-                    },
-                    message: {
-                      type: 'string',
-                      example: 'Server is healthy',
-                    },
-                    timestamp: {
-                      type: 'string',
-                      format: 'date-time',
-                      example: '2026-01-29T10:30:00.000Z',
-                    },
-                    environment: {
-                      type: 'string',
-                      example: 'development',
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+    ...healthPaths,
+    ...authPaths,
+    ...userPaths,
   },
 };
